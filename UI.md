@@ -4,7 +4,7 @@
 **Project:** DailyShortStorySite
 **Version:** 1.2.0
 **作成日:** 2026-03-09
-**Publishing Target:** `https://garyohosu.github.io/writer`
+**Publishing Target:** `https://garyohosu.github.io/writer2`
 
 ---
 
@@ -12,13 +12,13 @@
 
 ```mermaid
 graph TD
-    ROOT["/ (ルート)\nトップページ\n最新作 + 一覧プレビュー"]
-    INDEX["/posts/\n作品一覧ページ\n日付降順・タグフィルタ"]
-    STORY["/posts/:slug/\n作品詳細ページ\n本文・AdSense"]
-    ABOUT["/about/\nサイト概要\nAI生成明記"]
-    PRIVACY["/privacy-policy/\nプライバシーポリシー\nAdSense必須"]
-    CONTACT["/contact/\nコンタクト\nAdSense必須"]
-    TAG["/tags/:tag/\nタグ別一覧"]
+    ROOT["/writer2/ (ルート)\nトップページ\n最新作 + 一覧プレビュー"]
+    INDEX["/writer2/posts/\n作品一覧ページ\n日付降順・タグフィルタ"]
+    STORY["/writer2/posts/:slug/\n作品詳細ページ\n本文・AdSense"]
+    ABOUT["/writer2/about/\nサイト概要\nAI生成明記"]
+    PRIVACY["/writer2/privacy-policy/\nプライバシーポリシー\nAdSense必須"]
+    CONTACT["/writer2/contact/\nコンタクト\nAdSense必須"]
+    TAG["/writer2/tags/:tag/\nタグ別一覧"]
 
     ROOT --> INDEX
     ROOT --> STORY
@@ -38,9 +38,9 @@ graph TD
 graph LR
     NAV["グローバルナビゲーション\n（全ページ共通ヘッダー）"]
 
-    NAV --> HOME["🏠 ホーム\n/writer/"]
-    NAV --> STORIES["📚 作品一覧\n/writer/posts/"]
-    NAV --> ABOUT2["ℹ️ このサイトについて\n/writer/about/"]
+    NAV --> HOME["🏠 ホーム\n/writer2/"]
+    NAV --> STORIES["📚 作品一覧\n/writer2/posts/"]
+    NAV --> ABOUT2["ℹ️ このサイトについて\n/writer2/about/"]
     NAV --> FOOTER["フッターリンク群"]
 
     FOOTER --> PRIVACY2["プライバシーポリシー"]
@@ -54,18 +54,17 @@ graph LR
 
 ```mermaid
 graph TD
-    subgraph TOP["トップページ /writer/"]
+    subgraph TOP["トップページ /writer2/"]
         direction TB
         H["ヘッダー\nサイトタイトル + ナビゲーション"]
         HERO["ヒーローエリア\n本日の作品タイトル・要約・読む"]
         AD1["【広告枠①】記事上部\nAdSense"]
         LATEST["最新作プレビュー（本文冒頭）"]
-        AD2["【広告枠②】記事下部\nAdSense"]
         RECENT["最近の作品カード一覧\n（直近5件）"]
         AD3["【広告枠③】一覧下部\nAdSense"]
         FOOT["フッター\nAI生成明記 / プライバシー / コンタクト"]
 
-        H --> HERO --> AD1 --> LATEST --> AD2 --> RECENT --> AD3 --> FOOT
+        H --> HERO --> AD1 --> LATEST --> RECENT --> AD3 --> FOOT
     end
 ```
 
@@ -75,7 +74,7 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph LIST["作品一覧 /writer/posts/"]
+    subgraph LIST["作品一覧 /writer2/posts/"]
         direction TB
         LH["ヘッダー + ナビ"]
         LTITLE["ページタイトル「作品一覧」"]
@@ -83,7 +82,7 @@ graph TD
         LCARDS["作品カード列（日付降順）\n各カード: タイトル / 要約 / 読了時間 / タグ"]
         LAD["【広告枠③】一覧下部\nAdSense"]
         LPAGER["ページネーション"]
-        LFOOT["フッター"]
+        LFOOT["フッター\nAI生成明記 / プライバシー / コンタクト"]
 
         LH --> LTITLE --> LTAG --> LCARDS --> LAD --> LPAGER --> LFOOT
     end
@@ -95,10 +94,10 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph DETAIL["作品詳細 /writer/posts/:slug/"]
+    subgraph DETAIL["作品詳細 /writer2/posts/:slug/"]
         direction TB
         DH["ヘッダー + ナビ"]
-        DMETA["メタ情報\n日付 / ジャンル / タグ / 読了時間 / 文字数"]
+        DMETA["メタ情報\n日付 / ジャンル / タグ / 読了時間 / 文字数 / AI生成表記"]
         DAD1["【広告枠①】記事上部\nAdSense"]
         DBODY["本文\n（Markdown レンダリング）"]
         DAD2["【広告枠②】記事下部\nAdSense"]
@@ -132,9 +131,9 @@ flowchart TD
     PLOT --> STORY_GEN["Story Agent\nプロット+タイトルから本文生成\nstories/ に正本保存"]
     STORY_GEN --> REVIEW_EXEC["Review Agent\n品質・類似度・禁止語・AdSense リスク検査"]
 
-    REVIEW_EXEC --> JUDGE{合格？\nscore >= 80}
-    JUDGE -- "不合格 (retry < 3)" --> STORY_GEN
-    JUDGE -- "3回失敗" --> FAIL["result=failed\nWindows通知 + ログ保存"]
+    REVIEW_EXEC --> JUDGE{合格？\nreview_score >= 80}
+    JUDGE -- "不合格 (quality_retry < 3)" --> STORY_GEN
+    JUDGE -- "品質再生成3回失敗" --> FAIL["stage=review, result=failed\nWindows通知 + ログ保存"]
     JUDGE -- "合格" --> PUBLISH
 
     PUBLISH["Publish Agent\npublish 開始時\nstage=publish, result=in_progress"]
@@ -186,19 +185,20 @@ flowchart TD
 
 ```mermaid
 graph LR
-    BASE["https://garyohosu.github.io/writer"]
-    BASE --> R["/  → トップ"]
-    BASE --> P["/posts/  → 一覧"]
-    BASE --> PS["/posts/:slug/  → 詳細"]
-    BASE --> A["/about/"]
-    BASE --> PV["/privacy-policy/"]
-    BASE --> C["/contact/"]
-    BASE --> T["/tags/:tag/"]
+    BASE["https://garyohosu.github.io/writer2"]
+    BASE --> R["/writer2/  → トップ"]
+    BASE --> P["/writer2/posts/  → 一覧"]
+    BASE --> PS["/writer2/posts/:slug/  → 詳細"]
+    BASE --> A["/writer2/about/"]
+    BASE --> PV["/writer2/privacy-policy/"]
+    BASE --> C["/writer2/contact/"]
+    BASE --> T["/writer2/tags/:tag/"]
 ```
 
 - 内部リンクは常に `{{ site.baseurl }}/posts/:slug/` 形式で生成
 - `canonical` および OGP URL は `{{ site.url }}{{ site.baseurl }}{{ page.url }}`
 - ルート相対 `/posts/...` の直書き禁止（§20.2）
+- 図中の `/writer2/...` は `site.baseurl` 展開後の公開URLを示す
 
 ---
 
